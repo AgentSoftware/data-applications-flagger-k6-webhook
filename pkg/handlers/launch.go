@@ -310,7 +310,7 @@ func (h *launchHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 }
 
 func (h *launchHandler) waitForOutputPath(cmdLog *log.Entry, buf *bytes.Buffer) error {
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 30; i++ {
 		if strings.Contains(buf.String(), "output:") {
 			return nil
 		}

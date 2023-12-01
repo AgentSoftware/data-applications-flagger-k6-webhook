@@ -1,0 +1,11 @@
+steps:
+- name: 'gcr.io/kaniko-project/executor:latest'
+  timeout: 2700s
+  args:
+  - --destination=europe-west2-docker.pkg.dev/${_PROJECT}/kraken-api/flagger-k6-webhook:latest
+  - --cache=true
+  - --cache-ttl=24h
+  - --dockerfile=./Dockerfile
+timeout: 2700s
+options:
+  logging: CLOUD_LOGGING_ONLY
