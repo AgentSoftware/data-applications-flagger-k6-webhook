@@ -1,0 +1,39 @@
+﻿version: 2.1
+
+orbs:
+  data-applications: agent-software/data-applications-team-ops-orb@0.1.58
+
+workflows:
+  build_flagger_k6_image_dev:
+    jobs:
+      - data-applications/build_image_with_cloudbuild:
+          context: [kraken-v2-dev, slack-secrets]
+          name: build_flagger_k6_image_dev
+          checkout_directory: /root/kraken
+          context_dir: /root/kraken
+          path_to_cloudbuild_yaml: /root/kraken
+          cloudbuild_yaml_filename: cloudbuild_flagger_k6.yml
+          artifact_repository: kraken-api
+          image_name: flagger-k6-webhook
+          substitutions: "_PROJECT=kraken-v2-dev"
+          filters:
+            branches:
+              only:
+                - dev
+
+  build_flagger_k6_image_prod:
+    jobs:
+      - data-applications/build_image_with_cloudbuild:
+          context: [kraken-v2-prod, slack-secrets]
+          name: build_flagger_k6_image_prod
+          checkout_directory: /root/kraken
+          context_dir: /root/kraken
+          path_to_cloudbuild_yaml: /root/kraken
+          cloudbuild_yaml_filename: cloudbuild_flagger_k6.yml
+          artifact_repository: kraken-api
+          image_name: flagger-k6-webhook
+          substitutions: "_PROJECT=kraken-v2-prod"
+          filters:
+            branches:
+              only:
+                - main
