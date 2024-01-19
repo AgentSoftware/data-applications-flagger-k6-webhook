@@ -1,7 +1,7 @@
 ﻿version: 2.1
 
 orbs:
-  data-applications: agent-software/data-applications-team-ops-orb@0.1.58
+  data-applications: agent-software/data-applications-team-ops-orb@1.0.1
 
 workflows:
   build_flagger_k6_image_dev:

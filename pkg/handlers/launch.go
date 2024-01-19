@@ -62,7 +62,7 @@ type launchPayload struct {
 }
 
 func (p *launchPayload) statusMessage(emoji, status string) string {
-	return fmt.Sprintf("%s Load testing of `%s` in namespace `%s` %s", emoji, p.Name, p.Namespace, status)
+	return fmt.Sprintf("%s Load testing of `%s` in `%s` in namespace `%s` %s", emoji, p.Metadata.Script, p.Name, p.Namespace, status)
 }
 
 func (p *launchPayload) key() string {
