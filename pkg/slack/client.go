@@ -10,13 +10,18 @@ type slackClientWrapper struct {
 	client *slack.Client
 }
 
-func NewClient(token string) Client {
+func NewClient(token string, apiURL string) Client {
 	if token == "" {
 		return &noopClient{}
 	}
 
+	opts := []slack.Option{}
+	if apiURL != "" {
+		opts = append(opts, slack.OptionAPIURL(apiURL))
+	}
+
 	return &slackClientWrapper{
-		client: slack.New(token),
+		client: slack.New(token, opts...),
 	}
 }
 
@@ -45,14 +50,16 @@ func (w *slackClientWrapper) UpdateMessages(slackMessages map[string]string, tex
 
 func (w *slackClientWrapper) AddFileToThreads(slackMessages map[string]string, fileName, content string) error {
 	for channelID, ts := range slackMessages {
-		fileParams := slack.FileUploadParameters{
+		fileParams := slack.UploadFileV2Parameters{
 			Title:           fileName,
 			Content:         content,
-			Channels:        []string{channelID},
+			Channel:         channelID,
 			ThreadTimestamp: ts,
+			Filename:        fileName,
+			FileSize:        len(content), // the size (in bytes) of the file being uploaded
 		}
-		if _, err := w.client.UploadFile(fileParams); err != nil {
-			return fmt.Errorf("error while uploading output to %s in slack channel %s: %w", ts, channelID, err)
+		if _, err := w.client.UploadFileV2(fileParams); err != nil {
+			return fmt.Errorf("error while uploading output %s in slack channel %s: %w", fileName, channelID, err)
 		}
 	}
 
