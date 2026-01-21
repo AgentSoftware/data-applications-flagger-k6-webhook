@@ -2,7 +2,6 @@ package slack
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/slack-go/slack"
 )
@@ -11,13 +10,18 @@ type slackClientWrapper struct {
 	client *slack.Client
 }
 
-func NewClient(token string) Client {
+func NewClient(token string, apiURL string) Client {
 	if token == "" {
 		return &noopClient{}
 	}
 
+	opts := []slack.Option{}
+	if apiURL != "" {
+		opts = append(opts, slack.OptionAPIURL(apiURL))
+	}
+
 	return &slackClientWrapper{
-		client: slack.New(token),
+		client: slack.New(token, opts...),
 	}
 }
 
@@ -48,14 +52,14 @@ func (w *slackClientWrapper) AddFileToThreads(slackMessages map[string]string, f
 	for channelID, ts := range slackMessages {
 		fileParams := slack.UploadFileV2Parameters{
 			Title:           fileName,
-			Filename:        fileName,
-			FileSize:        len(content),
-			Reader:          strings.NewReader(content),
+			Content:         content,
 			Channel:         channelID,
 			ThreadTimestamp: ts,
+			Filename:        fileName,
+			FileSize:        len(content), // the size (in bytes) of the file being uploaded
 		}
 		if _, err := w.client.UploadFileV2(fileParams); err != nil {
-			return fmt.Errorf("error while uploading output to %s in slack channel %s: %w", ts, channelID, err)
+			return fmt.Errorf("error while uploading output %s in slack channel %s: %w", fileName, channelID, err)
 		}
 	}
 
