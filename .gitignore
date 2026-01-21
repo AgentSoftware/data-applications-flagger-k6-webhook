@@ -3,6 +3,7 @@ flagger-k6-webhook
 
 # IDE
 .vscode
+.idea
 
 # CI
 .drone/temp.yml
