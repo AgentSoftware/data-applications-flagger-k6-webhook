@@ -20,6 +20,7 @@ const (
 	flagLogLevel         = "log-level"
 	flagListenPort       = "listen-port"
 	flagSlackToken       = "slack-token"
+	flagSlackAPIURL      = "slack-api-url"
 	flagKubernetesClient = "kubernetes-client"
 
 	kubernetesClientNone      = "none"
@@ -58,6 +59,10 @@ func run(args []string) error {
 			EnvVars: []string{"SLACK_TOKEN"},
 		},
 		&cli.StringFlag{
+			Name:    flagSlackAPIURL,
+			EnvVars: []string{"SLACK_API_URL"},
+		},
+		&cli.StringFlag{
 			Name:    flagKubernetesClient,
 			EnvVars: []string{"KUBERNETES_CLIENT"},
 			Value:   kubernetesClientNone,
@@ -79,7 +84,7 @@ func launchServer(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	slackClient := slack.NewClient(c.String(flagSlackToken))
+	slackClient := slack.NewClient(c.String(flagSlackToken), c.String(flagSlackAPIURL))
 
 	var kubeClient kubernetes.Interface
 	if c.String(flagKubernetesClient) == kubernetesClientInCluster {
